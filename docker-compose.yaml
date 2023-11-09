@@ -24,6 +24,8 @@ services:
     volumes:
       - ./AspNetCore-keycloak/keycloakAuthDotNet6/certs:/https_certs:ro
       - ./shared_volume:/shared_volume
+      - ./step/scripts:/home/scripts/
+    command: sh /home/scripts/init_client.sh
 
   keycloak_db:
     container_name: keycloak_db

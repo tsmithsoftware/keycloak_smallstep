@@ -1,6 +1,0 @@
-{
-	"ca-url": "https://smallstep_ca:6783",
-	"ca-config": "/home/step/config/ca.json",
-	"fingerprint": "816e52a0db3624ba67cf8074d7b89565fdfd6da443f8225981703911ca3f59e2",
-	"root": "/home/step/certs/root_ca.crt"
-}

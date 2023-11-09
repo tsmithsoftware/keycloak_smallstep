@@ -16,6 +16,10 @@ ENV ASPNETCORE_URLS=http://+:5001
 EXPOSE 5001
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
+# install step to allow SSL cert registration
+# add community repo
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk update
 
 WORKDIR /src
 COPY ["/KeycloakAuth/KeycloakAuth.csproj", "KeycloakAuth/"]
@@ -31,5 +35,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 CMD ["dotnet", "KeycloakAuth.dll"]
-
-# apk add step-cli for setting up SSL certs
