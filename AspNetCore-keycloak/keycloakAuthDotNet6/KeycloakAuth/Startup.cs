@@ -10,14 +10,6 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Rewrite;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.IdentityModel.Logging;
 
 namespace KeycloakAuth

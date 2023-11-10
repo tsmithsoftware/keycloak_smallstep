@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS base
 # Needed to get alpine to work
 RUN apk add --no-cache tzdata
 RUN apk add icu-libs
+RUN apk add openssl
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 WORKDIR /app
@@ -34,4 +35,6 @@ RUN dotnet publish "KeycloakAuth.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-CMD ["dotnet", "KeycloakAuth.dll"]
+#CMD ["dotnet", "KeycloakAuth.dll"]
+# running bash to allow init_aspnet.sh to run
+CMD bash
