@@ -41,6 +41,7 @@ services:
       - "443:8443" # by default, KC in prod mode listens on 8443
     depends_on:
       - keycloak_db
+      - certificate_generator
     environment:
       DB_VENDOR: "POSTGRES"
       DB_ADDR: keycloak_db
@@ -53,14 +54,18 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: pass
     restart: always # set up in prod mode behind nginx
     # currently running using self-signed certs in mounted volume
-    command: start --hostname-url=https://keycloak.example --https-certificate-file=/https_certs/keycloak.cert --https-certificate-key-file=/https_certs/keycloak.key
-     # - /home/scripts/init_keycloak.sh
+    entrypoint: bash /home/scripts/init_keycloak.sh
+    env_file:
+      - docker-compose.env
     networks:
       - auth-network
     volumes:
       - ./AspNetCore-keycloak/keycloakAuthDotNet6/certs:/https_certs:ro
       - ./step/scripts:/home/scripts/
-
+      - ./shared_volume:/shared_volume
+      - type: bind
+        source: ./step/keycloak_certs
+        target: /home/keycloak_certs
 # https://smallstep.com/docs/tutorials/docker-tls-certificate-authority/#manual-installation
 # used as a CA to allow trust of keycloak certs
   smallstep_ca:
@@ -75,17 +80,34 @@ services:
       - ./step/scripts:/home/scripts
       - ./shared_volume:/shared_volume
     command: bash /home/scripts/init_smallstep.sh
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
-    environment: # doesn't seem to be being picked up
-    # Specify a password for encrypted CA Keys & Default CA Provisioner
-      DOCKER_STEPCA_INIT_PASSWORD: hello
-    # pull value from docker-compose.env
+    stdin_open: true 
+    tty: true       
     env_file:
     - docker-compose.env
     networks:
       - auth-network
 
+  certificate_generator:
+    container_name: certificate_generator
+    image: jitesoft/step-cli:latest
+    networks:
+      - auth-network
+    depends_on:
+      - smallstep_ca
+    volumes:
+      - type: bind
+        source: ./step/keycloak_certs
+        target: /keycloak_certs
+      - ./step/scripts:/home/scripts
+      - ./step/certs:/step/certs
+      - ./shared_volume:/shared_volume
+    command: sh /home/scripts/init_script_gen.sh
+    env_file:
+      - docker-compose.env
+
 networks:
   auth-network:
     driver: bridge
+
+volumes:
+  keycloak_certs: 

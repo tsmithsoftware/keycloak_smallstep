@@ -32,62 +32,41 @@ if [ -z "$CA_FINGERPRINT" ]; then
 fi
 echo "CA fingerprint found."
 
-echo "Adding step-cli tool..."
-apk add step-cli
-echo "step-cli added."
-
 echo "using step ca bootstrap to initialise container with new trusted cert..."
-step ca bootstrap --ca-url https://smallstep_ca:6783 --fingerprint $CA_FINGERPRINT 2>&1 >/dev/null
-if [ -e /root/.step/certs/root_ca.crt ]
+step ca bootstrap --force --ca-url https://smallstep_ca:6783 --fingerprint $CA_FINGERPRINT 2>&1 >/dev/null
+if [ -e  /home/step/.step/certs/root_ca.crt ]
 then
-    echo "ok"
+    echo "root CA initialised ok"
 else
-    echo "nok"
+    echo "root CA not initialisaed nok"
     exit 1
 fi
 
-echo "creating certificate directory"
-mkdir /certs
-cd /certs
-
-# generate password files (to be improved)
-echo hello > prov-pass
-echo hello > password
-
+echo "removing previous certificates..."
+rm -rf /keycloak_certs/
 # get a certificate and add SSL certificates to container
+
+echo hello > /keycloak_certs/password_file
+echo hello > /keycloak_certs/provisioner_password_file
+
 echo "obtaining a certificate from smallstep..."
-step ca certificate aspnet_core aspnet_core.crt aspnet_core.key -ca-url=https://smallstep_ca:6783 --password-file=./password --provisioner-password-file=./prov-pass
-if [ -e ./aspnet_core.crt ]
+step ca certificate /keycloak_certs/keycloak /keycloak_certs/keycloak.crt /keycloak_certs/keycloak.key -ca-url=https://smallstep_ca:6783 --password-file=/keycloak_certs/password_file --provisioner-password-file=/keycloak_certs/provisioner_password_file
+if [ -e /keycloak_certs/keycloak.crt ]
 then
     echo "ok, crt exists"
 else
     echo "nok"
     exit 1
 fi
-if [ -e ./aspnet_core.key ]
+if [ -e /keycloak_certs/keycloak.key ]
 then
     echo "ok, key exists"
 else
     echo "nok"
     exit 1
 fi
- # https://stackoverflow.com/questions/49153782/install-certificate-in-dotnet-core-docker-container
- # copy cert into /usr/local/share/ca-certificates/your_ca.crt
 echo "done, cert and key created"
 
 echo "running cert check..."
-step certificate inspect aspnet_core.crt
+step certificate inspect /keycloak_certs/keycloak.crt
 
-echo "convert into pkx"
-openssl pkcs12 -export -out aspnet_core.pfx -inkey ./aspnet_core.key -in ./aspnet_core.crt -passin pass:hello -passout pass:hello
-
-echo "move into locations"
-
-mv aspnet_core.pfx /certs/aspnet_core.pfx
-
-# run app
-cd /app
-
-echo "Running app..."
-dotnet KeycloakAuth.dll
-exec "$@"
