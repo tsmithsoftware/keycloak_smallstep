@@ -35,7 +35,8 @@ services:
 
   keycloak_two:
     container_name: keycloak_two
-    image: keycloak/keycloak
+    #image: keycloak/keycloak
+    build: ./keycloak_image/.
     ports: 
       - "8080:8080"
       - "443:8443" # by default, KC in prod mode listens on 8443
@@ -60,12 +61,15 @@ services:
     networks:
       - auth-network
     volumes:
+      - ./keycloak_data:/opt/keycloak/data/import
       - ./AspNetCore-keycloak/keycloakAuthDotNet6/certs:/https_certs:ro
       - ./step/scripts:/home/scripts/
+      - ./step/mount:/home/step # copy root CA across
       - ./shared_volume:/shared_volume
       - type: bind
         source: ./step/keycloak_certs
         target: /home/keycloak_certs
+
 # https://smallstep.com/docs/tutorials/docker-tls-certificate-authority/#manual-installation
 # used as a CA to allow trust of keycloak certs
   smallstep_ca:

@@ -2,8 +2,8 @@
 # get the certificate fingerprint to run from a shared volume
 # shared_cert_location pulled from env file
 
-# wait for 5 seconds to allow SSL container to do its magic - fingerprint may be old and not yet replaced
-sleep 5s
+# wait for 10 seconds to allow SSL container to do its magic - fingerprint may be old and not yet replaced
+sleep 10s
 echo "file location: $SHARED_CERT_LOCATION"
 
 # Block until the given file appears or the given timeout is reached.
@@ -36,8 +36,8 @@ echo "Adding step-cli tool..."
 apk add step-cli
 echo "step-cli added."
 
-echo "using step ca bootstrap to initialise container with new trusted cert..."
-step ca bootstrap --ca-url https://smallstep_ca:6783 --fingerprint $CA_FINGERPRINT 2>&1 >/dev/null
+echo "using step ca bootstrap to download root certificate and install into container ..."
+step ca bootstrap --force --ca-url https://smallstep_ca:6783 --fingerprint $CA_FINGERPRINT --install  2>&1 >/dev/null
 if [ -e /root/.step/certs/root_ca.crt ]
 then
     echo "ok"
