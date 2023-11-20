@@ -14,3 +14,5 @@ The process is as follows:
 -> does the KC container need to have the certificates added to the trust store? I don't think so - I think passing the certs to the command should do the necessary, otherwise what's the point of the parameters?
 
  The root certificate is also used by the webapp container to bootstrap itself to the Step CA and obtain a leaf certificate. This certificate is converted into .pkcs format and moved into a location on the container. The webapp expects the certificates to be at this (hardcoded) location and loads them accordingly.
+
+ As the certificates are generated on each run, it is advised to use the `start.sh` script instead of `docker-compose up`, so that the certficates are re-generated accordingly.
