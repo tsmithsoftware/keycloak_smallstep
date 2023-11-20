@@ -20,7 +20,7 @@ wait_file() {
 
 # Use the default timeout of 10 seconds:
 wait_file $SHARED_CERT_LOCATION && {
-  echo "File found."
+  echo "CA fingerprint file found."
 }
 
 echo "finding CA fingerprint..."
@@ -31,6 +31,11 @@ if [ -z "$CA_FINGERPRINT" ]; then
     exit 1
 fi
 echo "CA fingerprint found."
+
+echo "Checking Keycloak certificate location..."
+wait_file $KEYCLOAK_CERT_LOCATION && {
+  echo "Keycloak certificate found."
+}
 
 echo "Adding step-cli tool..."
 apk add step-cli
@@ -84,6 +89,14 @@ openssl pkcs12 -export -out aspnet_core.pfx -inkey ./aspnet_core.key -in ./aspne
 echo "move into locations"
 
 mv aspnet_core.pfx /certs/aspnet_core.pfx
+
+echo "installing KC certificates..."
+cp /home/keycloak-certs/keycloak.crt /tmp/keycloak.crt
+# echo "#KEYCLOAK" >> /etc/ssl/certs/ca-certificates.crt
+cat /tmp/keycloak.crt >> /etc/ssl/certs/ca-certificates.crt
+
+echo "Check ca-certificates file..."
+
 
 # run app
 cd /app

@@ -11,6 +11,9 @@ RUN apk add icu-libs
 RUN apk add openssl
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
+# required for keytool to add KC certs
+RUN apk add openjdk11
+
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:5001
 # EXPOSE 5000 - for http only

@@ -8,6 +8,8 @@ services:
       - "5000:5000"
       - "5001:5001"
     build: ./AspNetCore-keycloak/keycloakAuthDotNet6/.
+    depends_on:
+      - keycloak_two
     networks:
       - auth-network
     environment:
@@ -21,6 +23,7 @@ services:
     volumes:
       - ./shared_volume:/shared_volume
       - ./step/scripts:/home/scripts/
+      - ./step/keycloak_certs:/home/keycloak-certs
     command: sh /home/scripts/init_aspnet.sh
 
   keycloak_db:
@@ -66,6 +69,7 @@ services:
       - ./step/scripts:/home/scripts/
       - ./step/mount:/home/step # copy root CA across
       - ./shared_volume:/shared_volume
+      - ./keycloak_keystore:/keycloak_keystore # copy keystore across
       - type: bind
         source: ./step/keycloak_certs
         target: /home/keycloak_certs

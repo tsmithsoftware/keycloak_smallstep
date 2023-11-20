@@ -50,7 +50,7 @@ echo hello > /keycloak_certs/password_file
 echo hello > /keycloak_certs/provisioner_password_file
 
 echo "obtaining a certificate from smallstep..."
-step ca certificate /keycloak_certs/keycloak /keycloak_certs/keycloak.crt /keycloak_certs/keycloak.key -ca-url=https://smallstep_ca:6783 --password-file=/keycloak_certs/password_file --provisioner-password-file=/keycloak_certs/provisioner_password_file
+step ca certificate keycloak_two /keycloak_certs/keycloak.crt /keycloak_certs/keycloak.key -ca-url=https://smallstep_ca:6783 --password-file=/keycloak_certs/password_file --provisioner-password-file=/keycloak_certs/provisioner_password_file
 if [ -e /keycloak_certs/keycloak.crt ]
 then
     echo "ok, crt exists"

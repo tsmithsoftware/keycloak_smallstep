@@ -1,2 +1,3 @@
 step/mount/*
-shared_volume/ca_fingerprint
+shared_volume/ca_fingerprint/*
+step/keycloak_certs/*
