@@ -83,6 +83,9 @@ echo "done, cert and key created"
 echo "running cert check..."
 step certificate inspect aspnet_core.crt
 
+echo "copying cert into mounted volume..."
+cp aspnet_core.crt /home/aspnet_certs/aspnet_core.crt
+
 echo "convert into pkx"
 openssl pkcs12 -export -out aspnet_core.pfx -inkey ./aspnet_core.key -in ./aspnet_core.crt -passin pass:hello -passout pass:hello
 

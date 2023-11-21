@@ -21,13 +21,28 @@ wait_file keycloak_certs/keycloak.crt && {
   echo "File found."
 }
 
-echo "import cert, use pregenerated keystore"
+wait_file aspnet_certs/aspnet_core.crt && {
+  echo "File found."
+}
+
+#KC
+echo "import KC cert, use pregenerated keystore"
 echo "yes" | keytool -importcert -noprompt \
- -alias Alias \
+ -alias keycloak \
  -file /home/keycloak_certs/keycloak.crt \
  -keystore /keycloak_keystore/keystore.jks \
  -storepass password \
  -keypass password \
  -keyalg RSA
+
+echo "import aspnet cert, use pregenerated keystore"
+echo "yes" | keytool -importcert -noprompt \
+ -alias keycloak \
+ -file /home/aspnet_certs/aspnet_core.crt \
+ -keystore /keycloak_keystore/keystore.jks \
+ -storepass password \
+ -keypass hello \
+ -keyalg RSA
+
 # run keycloak using certificates creating using smallstep
 /opt/keycloak/bin/kc.sh start --log-level=warn --hostname-url=https://keycloak.example --https-certificate-file=/home/keycloak_certs/keycloak.crt --https-certificate-key-file=/home/keycloak_certs/keycloak.key --import-realm

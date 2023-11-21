@@ -1,3 +1,4 @@
 step/mount/*
 shared_volume/ca_fingerprint/*
 step/keycloak_certs/*
+step/aspnet_certs/*
