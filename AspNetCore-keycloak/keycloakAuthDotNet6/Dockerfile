@@ -14,6 +14,9 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 # required for keytool to add KC certs
 RUN apk add openjdk11
 
+# required for healthcheck
+RUN apk add curl
+
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:5001
 # EXPOSE 5000 - for http only

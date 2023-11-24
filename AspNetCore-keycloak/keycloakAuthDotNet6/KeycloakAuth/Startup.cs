@@ -125,6 +125,12 @@ namespace KeycloakAuth
                     policy.RequireClaim(ClaimTypes.Role, "noaccess"));
             });
 
+            /*
+            * Logging
+            */
+                services.AddMvc(opts=> {
+                    opts.Filters.Add(new AutoLogAttribute());
+                });
 
             /*
              * Non policy based authentication

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,11 @@ namespace KeycloakAuth
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
+                webBuilder.ConfigureKestrel(serverOptions => {
+                    serverOptions.ConfigureHttpsDefaults(co => {
+                        co.SslProtocols = SslProtocols.Tls12;
+                    });
+                });
             })
             .ConfigureWebHost((host) => {
                 var certificate = new X509Certificate2("/certs/aspnet_core.pfx", "hello");
@@ -37,6 +43,9 @@ namespace KeycloakAuth
                         {
                             ServerCertificate = certificate
                         });
+
+                        // log https
+                       //  ListenOptions.UseConnectionLogging();
                     });
                 });
             });
